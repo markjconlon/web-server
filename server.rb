@@ -14,7 +14,31 @@ loop do                                             # Server runs forever
     lines << line.chomp
   end
   puts lines                                        # Output the full request to stdout
+  filename = lines[0].gsub(/GET \//, '').gsub(/\ HTTP.*/, '')
 
-  client.puts(Time.now.ctime)                       # Output the current time to the client
+  if File.exists?(filename)
+    success_header = []
+    success_header << "HTTP/1.1 200 OK"
+    success_header << "Content-Type: text/html" # should reflect the appropriate content type (HTML, CSS, text, etc)
+    response_body = File.read(filename)
+    success_header << "Content-Length: #{response_body.length}" # should be the actual size of the response body
+    success_header << "Connection: close"
+    header = success_header.join("\r\n")
+
+  else
+    not_found_header = []
+    not_found_header << "HTTP/1.1 404 Not Found"
+    not_found_header << "Content-Type: text/plain" # is always text/plain
+    response_body = "File Not Found\n" # need to indicate end of the string with \n
+    not_found_header << "Content-Length: #{response_body.length}" # should the actual size of the response body
+    not_found_header << "Connection: close"
+    header = not_found_header.join("\r\n")
+
+  end
+  # filename = "index.html"
+  # response = File.read(filename)
+  response = [header, response_body].join("\r\n\r\n")
+  client.puts(response)
+  # client.puts(Time.now.ctime)                       # Output the current time to the client
   client.close                                      # Disconnect from the client
 end
