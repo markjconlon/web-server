@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Jokes</title>
+  </head>
+  <body>
+    <h1>Current Jokes!</h1>
+    <ul>
+      <% Joke.all.each do |joke| %>
+        <li><%= joke.joke %> <%= joke.punchline %></li>
+    </ul>
+  </body>
+</html>
